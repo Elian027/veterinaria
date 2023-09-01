@@ -1,23 +1,45 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-
-const [form, setform] = useState({
-    nombre: "",
-    apellido: "",
-    direccion: "",
-    telefono: "",
-    email: "",
-    password: ""
-})
-
-const handleChange = (e) => {
-    setform({
-        ...form,
-        [e.target.name]: e.target.value
-    })
-}
+import axios from 'axios';
+import Mensaje from '../componets/Alertas/Mensaje'
 
 export const Register = () => {
+    const [form, setForm] = useState({
+        nombre: '',
+        apellido: '',
+        direccion: '',
+        telefono: '',
+        email: '',
+        password: ''
+    });
+
+    const [mensaje, setMensaje] = useState({});
+
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/registro`
+            const respuesta = await axios.post(url, form);
+            setMensaje({ respuesta: respuesta.data.msg, tipo: true });
+            setForm({
+                nombre: '',
+                apellido: '',
+                direccion: '',
+                telefono: '',
+                email: '',
+                password: ''
+            });
+        } catch (error) {
+            setMensaje({ respuesta: error.response.data.msg, tipo: false });
+        }
+    };
     return (
         <>
             <div className="bg-white flex justify-center items-center w-1/2">
@@ -27,8 +49,7 @@ export const Register = () => {
                     <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">Welcome</h1>
                     <small className="text-gray-400 block my-4 text-sm">Please enter your details</small>
 
-
-                    <form >
+                    <form onSubmit={handleSubmit}>
 
                         <div className="mb-3">
                             <label className="mb-2 block text-sm font-semibold" htmlFor="nombre">Nombre:</label>
@@ -98,5 +119,5 @@ export const Register = () => {
             ">
             </div>
         </>
-    )
-}
+    );
+};
